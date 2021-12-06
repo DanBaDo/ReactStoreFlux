@@ -37,6 +37,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+			addItemToDemo: (title, background, initial) => {
+				const { demo } = getStore();
+				setStore({
+					demo: [...demo, { title, background, initial }]
+				});
 			}
 		}
 	};

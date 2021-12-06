@@ -12,6 +12,13 @@ export const TestDaniel = props => {
 			<Link to="/">
 				<p>Pa casa.</p>
 			</Link>
+			<h2>From store:</h2>
+			<ul>
+				{store.demo.map((item, idx) => (
+					<li key={idx}>{item.title}</li>
+				))}
+			</ul>
+			<button onClick={() => actions.addItemToDemo("THIRD", "pink", "pink")}>Add item</button>
 		</div>
 	);
 };
