@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../../styles/home.scss";
 
 // Components
@@ -27,5 +28,7 @@ export const Home = () => (
 			photoURL="https://picsum.photos/1024/800?random=1"
 			fullNewsURL="/full/news/url/1"
 		/>
+		<h2>News view</h2>
+		<Link to="/news/3">Ir a noticia</Link>
 	</div>
 );
