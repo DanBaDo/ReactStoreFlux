@@ -1,7 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
+			news: [
 				{
 					title: "Juan Bedoian, el periodista que escribió cultura con ‘Ñ'",
 					//date: "30 NOV 2021 - 19:27 CET",
