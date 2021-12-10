@@ -1,23 +1,28 @@
+const { response } = require('express');
 const express = require('express');
 const multer  = require('multer');
 
 const mimeParser = multer();
 
-const appPort = 3000;
+const appPort = 5000;
 
 var app = express();
+
+app.get('/',(req,res)=>{
+    res.send("Your backend is running")
+});
 
 app.post('/login/',mimeParser.none(), (req,res)=>{
     res.send(JSON.stringify(validates));
 });
 
-app.post('/logout/',autenticatedSession,(req,res)=>{
+app.post('/logout/',(req,res)=>{
     console.log('Cerrando sesión.')
     req.session.authenticated = false;
     res.sendStatus(200);
 });
 
-app.get( '/private/', autenticatedSession, function( req, res ) {
+app.get( '/private/',function( req, res ) {
     /**
      * Si el middleware de autenticación lo permite muestra el área privada.
      */
