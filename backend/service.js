@@ -1,6 +1,4 @@
 const express = require('express');
-const { contentType } = require('express/lib/response');
-const multer  = require('multer');
 
 // DB mockup
 
@@ -57,35 +55,45 @@ const news = [
     }
 ]
 
-const mimeParser = multer();
-
 const appPort = 5000;
 
 var app = express();
 
-function news2JSON(newsArray, idx) {
-    try {
-        idx = parseInt(idx);
-        if (newsArray[idx]) {
-            return JSON.stringify(newsArray[parseInt(idx)])
-        } else {
-            return null;
+const newsItem2JSON = {
+    outputFormat: "json",
+    encode: (data) => {
+        try {
+            if (data) {
+                return JSON.stringify(data);
+            } else {
+                return null;
+            }
+        } catch (err) {
+            console.error(err);
         }
-    } catch (err) {
-        console.error(err);
     }
 }
 
-function getNewsMiddlewareConstructor (newsArray, newsEncoding) {
-    return (req, res, next) => {
+
+function itemFromArrayIdx(idx, array) {
+    return array[idx]
+}
+
+function itemExtractorFactory( method, data ) {
+    return (key) => method(key, data)
+}
+
+function sendResponseFromURLParameter (URLParameter, itemExtractor, encoder ) {
+    return (req, res) => {
         try {
-            const news = newsEncoding(newsArray, req.params.idx);
-            if (news) {
-                res.type("json");
-                res.send(news);
+            const data = encoder.encode(itemExtractor(req.params[URLParameter]));
+            if (data) {
+                res.type(encoder.outputFormat);
+                res.send(data);
             } else {
                 res.status(404);
-                res.send(`{"status": 404, msg: "No news found for ${req.params.idx}"}`);
+                res.type("json")
+                res.send(`{"status": 404, msg: "No data found for ${req.params[URLParameter]}"}`);
             }
         } catch (err) {
             res.status(500);
@@ -94,17 +102,11 @@ function getNewsMiddlewareConstructor (newsArray, newsEncoding) {
     }
 }
 
-app.get("/",(req,res)=>{
-    res.send("Your backend is running")
-});
+const itemExtractor = itemExtractorFactory(itemFromArrayIdx,news);
 
-app.use("/news/?idx=:idx",getNewsMiddlewareConstructor (news, news2JSON))
+app.get("/",(req,res)=>res.send("Your backend is running"));
 
-app.get("/news/?idx=:idx",(req,res)=>{
-    res.status(404);
-    res.type("json");
-    res.send(newsJSON(news, req.params.idx));
-});
+app.get("/news/?idx=:idx", sendResponseFromURLParameter("idx",itemExtractor,newsItem2JSON));
 
 app.listen( appPort , ()=>{
     console.log(`Listo!: http://localhost:${appPort}/`)
